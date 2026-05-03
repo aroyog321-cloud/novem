@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git clone:*)",
+      "Bash(dir *)",
+      "Bash(flutter doctor *)",
+      "Bash(flutter emulators *)",
+      "Bash(adb devices *)",
+      "Bash(flutter run *)",
+      "Bash(flutter pub *)",
+      "Bash(flutter clean *)",
+      "Bash(flutter config *)"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+name: nove_mobile
+description: "NOVE Mobile - Premium Note Taking App"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  # State management
+  flutter_riverpod: ^2.6.1
+  # Utilities
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  shared_preferences: ^2.5.3
+  # File system
+  path_provider: ^2.1.5
+  path: ^1.9.0
+  # Fonts
+  google_fonts: ^6.2.1
+  flutter_overlay_window: ^0.5.0
+  permission_handler: ^12.0.1
+  flutter_staggered_grid_view: ^0.7.0
+  local_auth: ^3.0.1
+  share_plus: ^13.1.0
+  image_picker: ^1.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

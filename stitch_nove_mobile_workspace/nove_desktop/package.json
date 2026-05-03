@@ -1,0 +1,41 @@
+{
+  "name": "nove-desktop",
+  "version": "1.0.0",
+  "description": "NOVE - Premium Workspace Desktop App",
+  "main": "dist/main/index.js",
+  "scripts": {
+    "dev": "tsc && electron .",
+    "build": "tsc && electron-builder",
+    "build:win": "tsc && electron-builder --win",
+    "typecheck": "tsc --noEmit"
+  },
+  "build": {
+    "appId": "com.nove.desktop",
+    "productName": "NOVE",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "src/renderer/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.4.0",
+    "electron": "^28.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.0.0",
+    "electron-builder": "^24.9.0",
+    "typescript": "^5.0.0"
+  }
+}
