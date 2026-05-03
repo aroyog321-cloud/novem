@@ -6,6 +6,7 @@ class NotesState {
   final List<Note> notes;
   final bool isLoading;
   final String? searchQuery;
+<<<<<<< HEAD
   final String? error;
 
   NotesState({
@@ -14,18 +15,28 @@ class NotesState {
     this.searchQuery,
     this.error,
   });
+=======
+
+  NotesState({this.notes = const [], this.isLoading = false, this.searchQuery});
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
   NotesState copyWith({
     List<Note>? notes,
     bool? isLoading,
     String? searchQuery,
+<<<<<<< HEAD
     String? error,
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }) {
     return NotesState(
       notes: notes ?? this.notes,
       isLoading: isLoading ?? this.isLoading,
       searchQuery: searchQuery ?? this.searchQuery,
+<<<<<<< HEAD
       error: error ?? this.error,
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     );
   }
 }
@@ -37,6 +48,7 @@ class NotesNotifier extends StateNotifier<NotesState> {
 
   Future<void> loadNotes() async {
     if (state.notes.isEmpty) {
+<<<<<<< HEAD
       state = state.copyWith(isLoading: true, error: null);
     }
     try {
@@ -44,16 +56,33 @@ class NotesNotifier extends StateNotifier<NotesState> {
       state = state.copyWith(notes: notes, isLoading: false, error: null);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
+=======
+      state = state.copyWith(isLoading: true);
+    }
+    try {
+      final notes = await NoteService.getAllNotes();
+      state = state.copyWith(notes: notes, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     }
   }
 
   Future<void> search(String query) async {
+<<<<<<< HEAD
     state = state.copyWith(isLoading: true, searchQuery: query, error: null);
+=======
+    state = state.copyWith(isLoading: true, searchQuery: query);
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     try {
       final notes = await NoteService.searchNotes(query);
       state = state.copyWith(notes: notes, isLoading: false);
     } catch (e) {
+<<<<<<< HEAD
       state = state.copyWith(isLoading: false, error: e.toString());
+=======
+      state = state.copyWith(isLoading: false);
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     }
   }
 
@@ -62,6 +91,7 @@ class NotesNotifier extends StateNotifier<NotesState> {
     String? title,
     String colorLabel = '#FFFFFF',
     String? category,
+<<<<<<< HEAD
     bool isPinned = false,
     bool isFavorite = false,
   }) async {
@@ -81,6 +111,14 @@ class NotesNotifier extends StateNotifier<NotesState> {
       state = state.copyWith(error: e.toString());
       rethrow;
     }
+=======
+  }) async {
+    final note = await NoteService.createNote(content, titleOverride: title, colorLabel: colorLabel, category: category);
+    // Optimistic: prepend immediately, then sync from disk
+    state = state.copyWith(notes: [note, ...state.notes]);
+    await loadNotes();
+    return note;
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }
 
   Future<void> updateNote(
@@ -92,6 +130,7 @@ class NotesNotifier extends StateNotifier<NotesState> {
     String? colorLabel,
     String? category,
   }) async {
+<<<<<<< HEAD
     try {
       await NoteService.updateNote(
         id,
@@ -119,11 +158,36 @@ class NotesNotifier extends StateNotifier<NotesState> {
       state = state.copyWith(error: e.toString());
       await loadNotes(); // Re-sync on error
     }
+=======
+    await NoteService.updateNote(
+      id,
+      title: title,
+      content: content,
+      isPinned: isPinned,
+      isFavorite: isFavorite,
+      colorLabel: colorLabel,
+      category: category,
+    );
+    // Optimistic local update, then sync
+    final updatedNotes = state.notes.map((n) {
+      if (n.id != id) return n;
+      return n.copyWith(
+        content: content ?? n.content,
+        isPinned: isPinned ?? n.isPinned,
+        isFavorite: isFavorite ?? n.isFavorite,
+        colorLabel: colorLabel ?? n.colorLabel,
+        category: category ?? n.category,
+      );
+    }).toList();
+    state = state.copyWith(notes: updatedNotes);
+    await loadNotes();
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }
 
   Future<void> deleteNote(String id) async {
     // Optimistic remove first so the card disappears instantly
     state = state.copyWith(notes: state.notes.where((n) => n.id != id).toList());
+<<<<<<< HEAD
     try {
       await NoteService.deleteNote(id);
     } catch (e) {
@@ -160,6 +224,19 @@ class NotesNotifier extends StateNotifier<NotesState> {
       state = state.copyWith(error: e.toString());
       await loadNotes(); // Re-sync on error
     }
+=======
+    await NoteService.deleteNote(id);
+  }
+
+  Future<void> togglePin(String id) async {
+    await NoteService.togglePin(id);
+    await loadNotes();
+  }
+
+  Future<void> toggleFavorite(String id) async {
+    await NoteService.toggleFavorite(id);
+    await loadNotes();
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }
 }
 

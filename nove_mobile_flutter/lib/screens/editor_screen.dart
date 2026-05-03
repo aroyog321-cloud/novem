@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 import 'dart:async';
 import 'dart:io';
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+<<<<<<< HEAD
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -19,6 +23,43 @@ import '../widgets/markdown_editing_controller.dart';
 // ─── Backward-compat shim: home_screen.dart still imports this ────────────────
 Future<List<String>> loadAllCategories() => CategoryService.loadAllCategories();
 Future<void> saveCustomCategory(String cat) => CategoryService.saveCustomCategory(cat);
+=======
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/note.dart';
+import '../providers/notes_provider.dart';
+import '../services/note_service.dart';
+import '../theme/tokens.dart';
+
+// ─── Custom categories stored in SharedPreferences ───────────────────────────
+const _builtInCategories = ['Work', 'Ideas', 'Personal', 'Urgent'];
+const _customCategoriesKey = 'custom_categories';
+
+Future<List<String>> loadAllCategories() async {
+  final prefs = await SharedPreferences.getInstance();
+  final custom = prefs.getStringList(_customCategoriesKey) ?? [];
+  return [..._builtInCategories, ...custom];
+}
+
+Future<void> saveCustomCategory(String category) async {
+  final prefs = await SharedPreferences.getInstance();
+  final existing = prefs.getStringList(_customCategoriesKey) ?? [];
+  if (!existing.contains(category)) {
+    existing.add(category);
+    await prefs.setStringList(_customCategoriesKey, existing);
+  }
+}
+
+// ─── Color options ─────────────────────────────────────────────────────────
+const _colorLabels = [
+  '#C0452A',
+  '#F5C842',
+  '#5DCAA5',
+  '#85B7EB',
+  '#ED93B1',
+  '#FFFFFF',
+];
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
 class EditorScreen extends ConsumerStatefulWidget {
   final Note? note;
@@ -31,10 +72,15 @@ class EditorScreen extends ConsumerStatefulWidget {
 class _EditorScreenState extends ConsumerState<EditorScreen> {
   late TextEditingController _titleController;
   late TextEditingController _contentController;
+<<<<<<< HEAD
   final ScrollController _editorScrollController = ScrollController();
 
   late bool _isPinned;
   late bool _isFavorite;
+=======
+
+  late bool _isPinned;
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   late bool _isNewNote;
   late String _selectedCategory;
   late String _selectedColor;
@@ -42,6 +88,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   bool _hasChanges = false;
   bool _isSaved = false;
   bool _focusMode = false;
+<<<<<<< HEAD
   bool _showScrollToTop = false;
   bool _showFindReplace = false;
 
@@ -55,29 +102,45 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   List<String> _availableCategories = [...kBuiltInCategories];
   int _initialWordCount = 0;
+=======
+  bool _isPreviewMode = false;
+
+  List<String> _availableCategories = [..._builtInCategories];
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
   @override
   void initState() {
     super.initState();
     _isNewNote = widget.note == null;
+<<<<<<< HEAD
     _initialWordCount = widget.note?.wordCount ?? 0;
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
     _titleController = TextEditingController(
       text: widget.note?.title == 'Untitled' ? '' : (widget.note?.title ?? ''),
     );
+<<<<<<< HEAD
     _contentController = MarkdownEditingController(
       context: context,
+=======
+    _contentController = TextEditingController(
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
       text: widget.note?.content ?? '',
     );
 
     _isPinned = widget.note?.isPinned ?? false;
+<<<<<<< HEAD
     _isFavorite = widget.note?.isFavorite ?? false;
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     _selectedCategory = widget.note?.category ?? '';
     _selectedColor = widget.note?.colorLabel ?? '#FFFFFF';
 
     _titleController.addListener(_onChanged);
     _contentController.addListener(_onChanged);
 
+<<<<<<< HEAD
     _editorScrollController.addListener(() {
       final shouldShow = _editorScrollController.offset > 200;
       if (shouldShow != _showScrollToTop) {
@@ -85,6 +148,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       }
     });
 
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     _loadCategories();
   }
 
@@ -93,6 +158,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       _hasChanges = true;
       _isSaved = false;
     });
+<<<<<<< HEAD
     // Debounced autosave — cancels previous timer before scheduling a new one
     _debounce?.cancel();
     _debounce = Timer(const Duration(seconds: 3), _autoSave);
@@ -100,11 +166,18 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   Future<void> _loadCategories() async {
     final cats = await CategoryService.loadAllCategories();
+=======
+  }
+
+  Future<void> _loadCategories() async {
+    final cats = await loadAllCategories();
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     if (mounted) setState(() => _availableCategories = cats);
   }
 
   @override
   void dispose() {
+<<<<<<< HEAD
     _debounce?.cancel();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     _titleController.dispose();
@@ -112,6 +185,12 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     _editorScrollController.dispose();
     _findController.dispose();
     _replaceController.dispose();
+=======
+    // Ensure we restore standard UI mode if the user leaves while in Zen mode
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    _titleController.dispose();
+    _contentController.dispose();
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     super.dispose();
   }
 
@@ -122,6 +201,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     return firstLine.isEmpty ? 'Untitled' : firstLine;
   }
 
+<<<<<<< HEAD
   void _recordWordStats() {
     final newWordCount = _contentController.text.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).length;
     final diff = newWordCount - _initialWordCount;
@@ -133,6 +213,9 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
   Future<void> _saveAndClose() async {
     _debounce?.cancel();
+=======
+  Future<void> _saveAndClose() async {
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     final content = _contentController.text.trim();
     final title = _effectiveTitle;
 
@@ -176,8 +259,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       return;
     }
 
+<<<<<<< HEAD
     _recordWordStats();
 
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     if (_isNewNote) {
       await ref.read(notesProvider.notifier).createNote(
             content,
@@ -186,13 +272,18 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             category: _selectedCategory.isNotEmpty ? _selectedCategory : null,
           );
     } else if (_hasChanges && widget.note != null) {
+<<<<<<< HEAD
       // Save a version snapshot before overwriting
       final existing = await DatabaseService.getVersions(widget.note!.id);
       final currentNote = await NoteService.updateNote(
+=======
+      await NoteService.updateNote(
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
         widget.note!.id,
         title: title,
         content: content,
         isPinned: _isPinned,
+<<<<<<< HEAD
         isFavorite: _isFavorite,
         colorLabel: _selectedColor,
         category: _selectedCategory.isNotEmpty ? _selectedCategory : null,
@@ -206,6 +297,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
       if (currentNote != null) {
         await DatabaseService.saveVersion(currentNote);
       }
+=======
+        colorLabel: _selectedColor,
+        category: _selectedCategory.isNotEmpty ? _selectedCategory : null,
+      );
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     }
 
     HapticFeedback.lightImpact();
@@ -215,30 +311,47 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   Future<void> _autoSave() async {
     final content = _contentController.text.trim();
     if (!_hasChanges) return;
+<<<<<<< HEAD
     
     _recordWordStats();
 
     if (!_isNewNote && widget.note != null) {
       final updated = await NoteService.updateNote(
+=======
+    if (!_isNewNote && widget.note != null) {
+      await NoteService.updateNote(
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
         widget.note!.id,
         title: _effectiveTitle,
         content: content,
         isPinned: _isPinned,
+<<<<<<< HEAD
         isFavorite: _isFavorite,
         colorLabel: _selectedColor,
         category: _selectedCategory.isNotEmpty ? _selectedCategory : null,
       );
       if (updated != null) await DatabaseService.saveVersion(updated);
+=======
+        colorLabel: _selectedColor,
+        category: _selectedCategory.isNotEmpty ? _selectedCategory : null,
+      );
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
       if (mounted) setState(() { _isSaved = true; _hasChanges = false; });
     }
   }
 
   void _insertFormatting(String prefix, [String? suffix]) {
+<<<<<<< HEAD
     HapticFeedback.selectionClick();
     var sel = _contentController.selection;
     if (!sel.isValid) {
       sel = TextSelection.collapsed(offset: _contentController.text.length);
     }
+=======
+    HapticFeedback.selectionClick(); // Tactile feedback for formatting
+    final sel = _contentController.selection;
+    if (!sel.isValid) return;
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     final text = _contentController.text;
     final selected = sel.textInside(text);
     final replacement = suffix != null ? '$prefix$selected$suffix' : '$prefix$selected';
@@ -249,6 +362,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
+<<<<<<< HEAD
   // ─── Find & Replace ───────────────────────────────────────────────────────
   void _updateFindMatches() {
     final query = _findController.text;
@@ -415,6 +529,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   int _getWordCount() => _contentController.text
       .trim()
       .split(RegExp(r'\s+'))
@@ -436,6 +552,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     });
   }
 
+<<<<<<< HEAD
   void _toggleFavorite() {
     HapticFeedback.selectionClick();
     setState(() {
@@ -452,6 +569,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     });
   }
 
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   Future<void> _showAddCategorySheet() async {
     final controller = TextEditingController();
     final presets = ['Finance', 'Health', 'Travel', 'Learning', 'Reading', 'Shopping'];
@@ -551,6 +670,131 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
     );
   }
 
+<<<<<<< HEAD
+=======
+  Widget _buildPreview(BuildContext context) {
+    final raw = _contentController.text;
+    if (raw.trim().isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+        child: Text(
+          'Nothing to preview yet.',
+          style: NoveTypography.editorFont(
+            style: TextStyle(fontSize: 18, color: NoveColors.mutedText(context)),
+          ),
+        ),
+      );
+    }
+
+    final lines = raw.split('\n');
+    final spans = <Widget>[];
+
+    for (final line in lines) {
+      if (line.startsWith('# ')) {
+        spans.add(_previewH(line.substring(2), 24, context));
+      } else if (line.startsWith('## ')) {
+        spans.add(_previewH(line.substring(3), 20, context));
+      } else if (line.startsWith('### ')) {
+        spans.add(_previewH(line.substring(4), 17, context));
+      } else if (line.startsWith('> ')) {
+        spans.add(_previewQuote(line.substring(2), context));
+      } else if (line.startsWith('• ') || line.startsWith('- ')) {
+        spans.add(_previewBullet(line.substring(2), context));
+      } else if (line.startsWith('☐ ') || line.startsWith('☑ ')) {
+        final done = line.startsWith('☑ ');
+        spans.add(_previewCheckbox(line.substring(2), done, context));
+      } else if (line.isEmpty) {
+        spans.add(const SizedBox(height: 8));
+      } else {
+        spans.add(_previewParagraph(line, context));
+      }
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+      children: spans,
+    );
+  }
+
+  Widget _previewH(String text, double size, BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 6, top: 8),
+        child: Text(text,
+            style: GoogleFonts.lora(
+                fontSize: size, fontWeight: FontWeight.w600, color: NoveColors.primaryText(context), height: 1.3)),
+      );
+
+  Widget _previewQuote(String text, BuildContext context) => Container(
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: const EdgeInsets.only(left: 12, top: 4, bottom: 4),
+        decoration: BoxDecoration(
+          border: Border(left: BorderSide(color: NoveColors.accent(context), width: 3)),
+        ),
+        child: Text(text,
+            style: GoogleFonts.lora(
+                fontSize: 16, fontStyle: FontStyle.italic, color: NoveColors.secondaryText(context), height: 1.6)),
+      );
+
+  Widget _previewBullet(String text, BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 7, right: 10),
+              child: Container(
+                  width: 5, height: 5, decoration: BoxDecoration(color: NoveColors.accent(context), shape: BoxShape.circle)),
+            ),
+            Expanded(child: _richText(text, 16, context)),
+          ],
+        ),
+      );
+
+  Widget _previewCheckbox(String text, bool done, BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          children: [
+            Icon(
+              done ? Icons.check_box_rounded : Icons.check_box_outline_blank_rounded,
+              size: 18,
+              color: done ? NoveColors.accent(context) : NoveColors.mutedText(context),
+            ),
+            const SizedBox(width: 8),
+            Expanded(child: _richText(text, 16, context)),
+          ],
+        ),
+      );
+
+  Widget _previewParagraph(String text, BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: _richText(text, 18, context),
+      );
+
+  Widget _richText(String text, double size, BuildContext context) {
+    final spans = <TextSpan>[];
+    final regex = RegExp(r'\*\*(.+?)\*\*|_(.+?)_');
+    int last = 0;
+    for (final match in regex.allMatches(text)) {
+      if (match.start > last) {
+        spans.add(TextSpan(text: text.substring(last, match.start)));
+      }
+      if (match.group(1) != null) {
+        spans.add(TextSpan(text: match.group(1), style: const TextStyle(fontWeight: FontWeight.w700)));
+      } else if (match.group(2) != null) {
+        spans.add(TextSpan(text: match.group(2), style: const TextStyle(fontStyle: FontStyle.italic)));
+      }
+      last = match.end;
+    }
+    if (last < text.length) spans.add(TextSpan(text: text.substring(last)));
+
+    return RichText(
+      text: TextSpan(
+        style: GoogleFonts.lora(fontSize: size, height: 1.6, color: NoveColors.primaryText(context)),
+        children: spans,
+      ),
+    );
+  }
+
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -559,6 +803,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
 
     return Scaffold(
       backgroundColor: NoveColors.bg(context),
+<<<<<<< HEAD
       floatingActionButton: _showScrollToTop
           ? FloatingActionButton.small(
               backgroundColor: NoveColors.cardBg(context),
@@ -574,6 +819,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
       body: SafeArea(
         child: Column(
           children: [
@@ -610,6 +857,7 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     ),
                   ),
                   const Spacer(),
+<<<<<<< HEAD
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -667,11 +915,121 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                     fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white,
                                   )),
                             ),
+=======
+
+                  if (!_focusMode) ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: NoveColors.inputBg(context),
+                        borderRadius: BorderRadius.circular(NoveRadii.full),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _ToggleSegment(
+                            label: 'Edit',
+                            isActive: !_isPreviewMode,
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              setState(() => _isPreviewMode = false);
+                            },
+                          ),
+                          _ToggleSegment(
+                            label: 'Preview',
+                            isActive: _isPreviewMode,
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              setState(() => _isPreviewMode = true);
+                            },
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                           ),
                         ],
                       ),
                     ),
+<<<<<<< HEAD
                   ),
+=======
+                    const SizedBox(width: 8),
+                  ],
+
+                  // Focus toggle
+                  GestureDetector(
+                    onTap: _toggleFocusMode,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: _focusMode ? NoveColors.accent(context).withOpacity(0.15) : Colors.transparent,
+                        borderRadius: BorderRadius.circular(NoveRadii.full),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _focusMode ? Icons.fullscreen_exit_rounded : Icons.center_focus_strong_outlined,
+                            size: 14,
+                            color: _focusMode ? NoveColors.accent(context) : NoveColors.mutedText(context)
+                          ),
+                          const SizedBox(width: 4),
+                          Text(_focusMode ? 'Exit Zen' : 'Focus',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12,
+                                color: _focusMode ? NoveColors.accent(context) : NoveColors.mutedText(context),
+                                fontWeight: FontWeight.w600,
+                              )),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+
+                  if (!_focusMode) ...[
+                    // Pin button
+                    GestureDetector(
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        setState(() {
+                          _isPinned = !_isPinned;
+                          _hasChanges = true;
+                        });
+                      },
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: _isPinned ? NoveColors.accent(context).withOpacity(0.12) : NoveColors.cardBg(context),
+                          borderRadius: BorderRadius.circular(NoveRadii.sm),
+                          border: Border.all(color: NoveColors.cardBorder(context), width: 0.5),
+                        ),
+                        child: Icon(
+                            _isPinned ? Icons.push_pin_rounded : Icons.push_pin_outlined,
+                            size: 18,
+                            color: _isPinned ? NoveColors.accent(context) : NoveColors.mutedText(context)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Done button
+                    GestureDetector(
+                      onTap: _saveAndClose,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
+                        decoration: BoxDecoration(
+                          color: NoveColors.accent(context),
+                          borderRadius: BorderRadius.circular(NoveRadii.full),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.check_rounded, color: Colors.white, size: 14),
+                            const SizedBox(width: 5),
+                            Text('Done',
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white,
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ]
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                 ],
               ),
             ),
@@ -688,6 +1046,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                   children: [
                     TextField(
                       controller: _titleController,
+<<<<<<< HEAD
+=======
+                      readOnly: _isPreviewMode,
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                       textCapitalization: TextCapitalization.sentences,
                       style: GoogleFonts.lora(
                         fontSize: 22, fontWeight: FontWeight.w600, color: NoveColors.primaryText(context), height: 1.3,
@@ -712,7 +1074,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                           _CategoryChip(
                             label: 'None',
                             isActive: _selectedCategory.isEmpty,
+<<<<<<< HEAD
                             onTap: () {
+=======
+                            onTap: _isPreviewMode ? null : () {
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                               HapticFeedback.selectionClick();
                               setState(() {
                                 _selectedCategory = '';
@@ -729,7 +1095,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                               child: _CategoryChip(
                                 label: cat,
                                 isActive: isActive,
+<<<<<<< HEAD
                                 onTap: () {
+=======
+                                onTap: _isPreviewMode ? null : () {
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                                   HapticFeedback.selectionClick();
                                   setState(() {
                                     _selectedCategory = isActive ? '' : cat;
@@ -741,6 +1111,10 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                             );
                           }),
 
+<<<<<<< HEAD
+=======
+                          if (!_isPreviewMode)
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                             GestureDetector(
                               onTap: () {
                                 HapticFeedback.lightImpact();
@@ -751,7 +1125,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                 decoration: BoxDecoration(
                                   color: Colors.transparent,
                                   borderRadius: BorderRadius.circular(NoveRadii.full),
+<<<<<<< HEAD
                                   border: Border.all(color: NoveColors.accent(context).withValues(alpha: 0.5), width: 0.5),
+=======
+                                  border: Border.all(color: NoveColors.accent(context).withOpacity(0.5), width: 0.5),
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -780,7 +1158,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                       ),
                     ),
 
+<<<<<<< HEAD
                     const SizedBox(height: 8),
+=======
+                    if (!_isPreviewMode) ...[
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -789,7 +1171,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                 fontSize: 11, fontWeight: FontWeight.w600, color: NoveColors.mutedText(context),
                               )),
                           const SizedBox(width: 8),
+<<<<<<< HEAD
                           ...kNoteColorLabels.map((c) {
+=======
+                          ..._colorLabels.map((c) {
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                             final isSelected = _selectedColor == c;
                             return GestureDetector(
                               onTap: () {
@@ -820,18 +1206,29 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                         ],
                       ),
                     ],
+<<<<<<< HEAD
+=======
+                  ],
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                 ),
               ),
 
             // ── Editor Body / Preview ─────────────────────────────────────
             Expanded(
+<<<<<<< HEAD
               child: Stack(
+=======
+              child: _isPreviewMode
+                  ? _buildPreview(context)
+                  : Stack(
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                       children: [
                         if (!_focusMode)
                           Positioned.fill(
                             child: CustomPaint(
                               painter: RuledBackgroundPainter(
                                 lineColor: isDark
+<<<<<<< HEAD
                                     ? NoveColors.warmGray800.withValues(alpha: 0.6)
                                     : NoveColors.warmGray200.withValues(alpha: 0.5),
                               ),
@@ -860,6 +1257,34 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                                 border: InputBorder.none,
                                 contentPadding: const EdgeInsets.symmetric(vertical: 24),
                               ),
+=======
+                                    ? NoveColors.warmGray800.withOpacity(0.6)
+                                    : NoveColors.warmGray200.withOpacity(0.5),
+                              ),
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: TextField(
+                            controller: _contentController,
+                            maxLines: null,
+                            expands: true,
+                            autofocus: _isNewNote,
+                            textAlignVertical: TextAlignVertical.top,
+                            cursorColor: NoveColors.accent(context),
+                            cursorWidth: 2,
+                            onChanged: (_) => Future.delayed(const Duration(seconds: 3), _autoSave),
+                            style: NoveTypography.editorFont(
+                              style: TextStyle(fontSize: 18, color: NoveColors.primaryText(context)),
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Write freely. Nothing leaves this device.',
+                              hintStyle: NoveTypography.editorFont(
+                                style: TextStyle(fontSize: 18, color: NoveColors.mutedText(context)),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 24),
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                             ),
                           ),
                         ),
@@ -867,7 +1292,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     ),
             ),
 
+<<<<<<< HEAD
             if (!_focusMode)
+=======
+            if (!_focusMode && !_isPreviewMode)
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
               Container(
                 margin: const EdgeInsets.fromLTRB(16, 0, 16, 6),
                 decoration: BoxDecoration(
@@ -882,8 +1311,11 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     _FmtDivider(),
                     _FormatBtn(label: 'I', italic: true, onTap: () => _insertFormatting('_', '_'), isDark: isDark),
                     _FmtDivider(),
+<<<<<<< HEAD
                     _FormatBtn(label: '`', onTap: () => _insertFormatting('`', '`'), isDark: isDark),
                     _FmtDivider(),
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                     _FormatIconBtn(icon: Icons.format_list_bulleted_rounded, tooltip: 'Bullet list', onTap: () => _insertFormatting('• '), isDark: isDark),
                     _FmtDivider(),
                     _FormatIconBtn(icon: Icons.check_box_outlined, tooltip: 'Checkbox', onTap: () => _insertFormatting('☐ '), isDark: isDark),
@@ -891,14 +1323,18 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                     _FormatBtn(label: 'H', onTap: () => _insertFormatting('# '), isDark: isDark),
                     _FmtDivider(),
                     _FormatIconBtn(icon: Icons.format_quote_rounded, tooltip: 'Quote', onTap: () => _insertFormatting('> '), isDark: isDark),
+<<<<<<< HEAD
                     _FmtDivider(),
                     _FormatIconBtn(icon: Icons.image_outlined, tooltip: 'Insert image', onTap: _insertImage, isDark: isDark),
                     _FmtDivider(),
                     _FormatIconBtn(icon: Icons.search_rounded, tooltip: 'Find & Replace', onTap: () { HapticFeedback.lightImpact(); setState(() => _showFindReplace = !_showFindReplace); }, isDark: isDark),
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                   ],
                 ),
               ),
 
+<<<<<<< HEAD
             // ── Find & Replace Bar ───────────────────────────────────
             AnimatedContainer(
               duration: NoveAnimation.fast,
@@ -965,6 +1401,8 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                   : const SizedBox.shrink(),
             ),
 
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
             if (!_focusMode)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -981,6 +1419,23 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
                       ),
                     ),
                     const Spacer(),
+<<<<<<< HEAD
+=======
+                    if (_isPreviewMode)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: NoveColors.accent(context).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(NoveRadii.full),
+                        ),
+                        child: Text(
+                          'Read-only preview',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 10, color: NoveColors.accent(context), fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                     const Spacer(),
                     AnimatedOpacity(
                       opacity: _isSaved ? 1 : 0,
@@ -1006,6 +1461,38 @@ class _EditorScreenState extends ConsumerState<EditorScreen> {
   }
 }
 
+<<<<<<< HEAD
+=======
+class _ToggleSegment extends StatelessWidget {
+  final String label;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _ToggleSegment({required this.label, required this.isActive, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: NoveAnimation.fast,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isActive ? NoveColors.cardBg(context) : Colors.transparent,
+          borderRadius: BorderRadius.circular(NoveRadii.full),
+          boxShadow: isActive ? [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 4, offset: const Offset(0, 1))] : [],
+        ),
+        child: Text(
+          label,
+          style: GoogleFonts.dmSans(
+            fontSize: 12, fontWeight: isActive ? FontWeight.w700 : FontWeight.w500, color: isActive ? NoveColors.primaryText(context) : NoveColors.mutedText(context),
+          ),
+        ),
+      ),
+    );
+  }
+}
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
 class _CategoryChip extends StatelessWidget {
   final String label;
@@ -1091,6 +1578,7 @@ class _FormatIconBtn extends StatelessWidget {
   final String tooltip;
   final VoidCallback onTap;
   final bool isDark;
+<<<<<<< HEAD
   final bool expand;
 
   const _FormatIconBtn({required this.icon, required this.tooltip, required this.onTap, required this.isDark, this.expand = true});
@@ -1105,6 +1593,22 @@ class _FormatIconBtn extends StatelessWidget {
       ),
     );
     return expand ? Expanded(child: child) : child;
+=======
+
+  const _FormatIconBtn({required this.icon, required this.tooltip, required this.onTap, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Center(child: Icon(icon, size: 18, color: NoveColors.secondaryText(context))),
+        ),
+      ),
+    );
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }
 }
 

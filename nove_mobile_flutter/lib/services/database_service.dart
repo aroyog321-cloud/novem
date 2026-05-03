@@ -127,6 +127,7 @@ class DatabaseService {
     return _notes.where((note) => note.category == category).toList()
       ..sort(_sortNotes);
   }
+<<<<<<< HEAD
 
   // ─── Note Version History ────────────────────────────────────────────────
 
@@ -199,4 +200,6 @@ class DatabaseService {
       debugPrint('Error deleting versions: $e');
     }
   }
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 }

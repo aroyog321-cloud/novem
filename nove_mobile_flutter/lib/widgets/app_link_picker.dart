@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+<<<<<<< HEAD
 import '../services/app_link_service.dart';
 import '../theme/tokens.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+=======
+import 'dart:io'; // FIX: needed for Platform.isAndroid
+import '../services/app_link_service.dart';
+import '../theme/tokens.dart';
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
 void showAppLinkPicker({
   required BuildContext context,
@@ -26,16 +32,25 @@ class _AppLinkPickerSheet extends StatefulWidget {
   State<_AppLinkPickerSheet> createState() => _AppLinkPickerSheetState();
 }
 
+<<<<<<< HEAD
 class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBindingObserver {
   List<AppInfo> _apps = [];
   List<AppInfo> _filteredApps = [];
   bool _isLoading = true;
   bool _needsAccessibilityPermission = false;
   bool _needsOverlayPermission = false;
+=======
+class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> {
+  List<AppInfo> _apps = [];
+  List<AppInfo> _filteredApps = [];
+  bool _isLoading = true;
+  bool _needsPermission = false;
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
   @override
   void initState() {
     super.initState();
+<<<<<<< HEAD
     WidgetsBinding.instance.addObserver(this);
     _loadApps();
   }
@@ -63,6 +78,28 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
       setState(() {
         _needsAccessibilityPermission = !hasAccessibilityPerm;
         _needsOverlayPermission = !hasOverlayPerm;
+=======
+    _loadApps();
+  }
+
+  Future<void> _loadApps() async {
+    // FIX: App linking (accessibility service) is Android-only.
+    // On iOS/Web, show the permission screen so the user understands
+    // why this feature isn't available, instead of hanging in a
+    // loading spinner or crashing with MissingPluginException.
+    if (!Platform.isAndroid) {
+      setState(() {
+        _needsPermission = true;
+        _isLoading = false;
+      });
+      return;
+    }
+
+    final hasPerm = await AppLinkService.isAccessibilityEnabled();
+    if (!hasPerm) {
+      setState(() {
+        _needsPermission = true;
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
         _isLoading = false;
       });
       return;
@@ -80,7 +117,11 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
@@ -120,8 +161,13 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
               ),
             ),
           ),
+<<<<<<< HEAD
           
           if (_needsAccessibilityPermission || _needsOverlayPermission) ...[
+=======
+
+          if (_needsPermission) ...[
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
             Expanded(
               child: Center(
                 child: Padding(
@@ -129,6 +175,7 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+<<<<<<< HEAD
                       Icon(Icons.admin_panel_settings, size: 48, color: NoveColors.accent(context)),
                       const SizedBox(height: 16),
                       Text(
@@ -150,10 +197,42 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
                           },
                           icon: const Icon(Icons.settings_accessibility, size: 18),
                           label: const Text('Grant Accessibility'),
+=======
+                      Icon(Icons.settings_accessibility,
+                          size: 48, color: NoveColors.accent(context)),
+                      const SizedBox(height: 16),
+                      Text(
+                        // FIX: Show clearer message for non-Android
+                        Platform.isAndroid
+                            ? 'Accessibility Required'
+                            : 'Android Only',
+                        style: GoogleFonts.lora(
+                            fontSize: 20, fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        Platform.isAndroid
+                            ? 'NOVE needs Accessibility permissions to detect when you launch an app. We do not track or read your screen content.'
+                            : 'App linking is only available on Android. It uses the Accessibility Service to detect when a linked app is opened.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                            color: NoveColors.secondaryText(context)),
+                      ),
+                      const SizedBox(height: 24),
+                      if (Platform.isAndroid)
+                        ElevatedButton(
+                          onPressed: () async {
+                            HapticFeedback.selectionClick();
+                            await AppLinkService.openAccessibilitySettings();
+                            if (!context.mounted) return; // FIX: mounted guard
+                            Navigator.pop(context);
+                          },
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                           style: ElevatedButton.styleFrom(
                             backgroundColor: NoveColors.accent(context),
                             foregroundColor: Colors.white,
                             shape: const StadiumBorder(),
+<<<<<<< HEAD
                             minimumSize: const Size(double.infinity, 48),
                           ),
                         ),
@@ -174,6 +253,19 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
                             minimumSize: const Size(double.infinity, 48),
                           ),
                         )
+=======
+                          ),
+                          child: const Text('Open Settings'),
+                        )
+                      else
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: Text(
+                            'Close',
+                            style: TextStyle(color: NoveColors.accent(context)),
+                          ),
+                        ),
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                     ],
                   ),
                 ),
@@ -182,7 +274,12 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
           ] else if (_isLoading) ...[
             Expanded(
               child: Center(
+<<<<<<< HEAD
                 child: CircularProgressIndicator(color: NoveColors.accent(context)),
+=======
+                child:
+                    CircularProgressIndicator(color: NoveColors.accent(context)),
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
               ),
             )
           ] else ...[
@@ -202,7 +299,12 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
                 onChanged: (val) {
                   setState(() {
                     _filteredApps = _apps
+<<<<<<< HEAD
                         .where((a) => a.name.toLowerCase().contains(val.toLowerCase()))
+=======
+                        .where((a) =>
+                            a.name.toLowerCase().contains(val.toLowerCase()))
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                         .toList();
                   });
                 },
@@ -218,11 +320,18 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
+<<<<<<< HEAD
                         color: isDark ? NoveColors.cardDarkLight : NoveColors.warmGray100,
+=======
+                        color: isDark
+                            ? NoveColors.cardDarkLight
+                            : NoveColors.warmGray100,
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(Icons.apps),
                     ),
+<<<<<<< HEAD
                     title: Text(
                       app.name, 
                       style: GoogleFonts.dmSans(
@@ -233,6 +342,16 @@ class _AppLinkPickerSheetState extends State<_AppLinkPickerSheet> with WidgetsBi
                     subtitle: Text(
                       app.packageName,
                       style: GoogleFonts.dmSans(fontSize: 11, color: NoveColors.mutedText(context)),
+=======
+                    title: Text(app.name,
+                        style: GoogleFonts.dmSans(
+                            fontWeight: FontWeight.w600,
+                            color: NoveColors.primaryText(context))),
+                    subtitle: Text(
+                      app.packageName,
+                      style: GoogleFonts.dmSans(
+                          fontSize: 11, color: NoveColors.mutedText(context)),
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                     ),
                     onTap: () {
                       widget.onAppSelected(app);

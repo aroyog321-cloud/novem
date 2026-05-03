@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+<<<<<<< HEAD
 import 'package:share_plus/share_plus.dart';
 
 import '../models/note.dart';
@@ -15,6 +16,17 @@ import 'editor_screen.dart';
 enum _SortOrder { updatedDesc, updatedAsc, titleAsc, titleDesc, wordCountDesc }
 
 
+=======
+import 'dart:ui';
+import '../models/note.dart';
+import '../providers/notes_provider.dart';
+import '../theme/tokens.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'editor_screen.dart' show loadAllCategories;
+import 'editor_screen.dart';
+
+const _coreCategories = ['All', '★ Starred'];
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -28,12 +40,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _scrollController = ScrollController();
   String _selectedCategory = 'All';
   bool _isSearching = false;
+<<<<<<< HEAD
   _SortOrder _sortOrder = _SortOrder.updatedDesc;
   List<String> _categories = ['All', 'Work', 'Ideas', 'Personal', 'Urgent', '★ Starred'];
 
   int _streak = 0;
   int _wordsToday = 0;
 
+=======
+  List<String> _categories = ['All', 'Work', 'Ideas', 'Personal', 'Urgent', '★ Starred'];
+
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   @override
   void initState() {
     super.initState();
@@ -41,6 +58,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(notesProvider.notifier).loadNotes();
     });
     _refreshCategories();
+<<<<<<< HEAD
     _loadStats();
   }
 
@@ -56,6 +74,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _refreshCategories() async {
     final custom = await CategoryService.loadAllCategories();
+=======
+  }
+
+  Future<void> _refreshCategories() async {
+    final custom = await loadAllCategories();
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
     if (mounted) {
       setState(() {
         _categories = ['All', ...custom, '★ Starred'];
@@ -83,11 +107,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => EditorScreen(note: note)),
+<<<<<<< HEAD
     ).then((_) {
       ref.read(notesProvider.notifier).loadNotes();
       _refreshCategories();
       _loadStats();
     });
+=======
+    ).then((_) => ref.read(notesProvider.notifier).loadNotes());
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }
 
   void _createNote() {
@@ -95,6 +123,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const EditorScreen()),
+<<<<<<< HEAD
     ).then((_) {
       ref.read(notesProvider.notifier).loadNotes();
       _refreshCategories();
@@ -135,6 +164,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         break;
     }
     return filtered;
+=======
+    ).then((_) => ref.read(notesProvider.notifier).loadNotes());
+  }
+
+  List<Note> _getFilteredNotes(List<Note> notes) {
+    if (_selectedCategory == 'All') return notes;
+    if (_selectedCategory == '★ Starred') {
+      return notes.where((n) => n.isFavorite).toList();
+    }
+    return notes
+        .where((n) =>
+            (n.category ?? '').toLowerCase() ==
+            _selectedCategory.toLowerCase())
+        .toList();
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }
 
   Map<String, int> _getCategoryCounts(List<Note> notes) {
@@ -291,15 +335,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           const SizedBox(width: 10),
                           Expanded(
                             child: StatCard(
+<<<<<<< HEAD
                               label: 'Streak 🔥',
                               value: _streak,
+=======
+                              label: 'Pinned',
+                              value: pinnedNotes,
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                             ),
                           ),
                           const SizedBox(width: 10),
                           Expanded(
                             child: StatCard(
+<<<<<<< HEAD
                               label: 'Words today',
                               value: _wordsToday,
+=======
+                              label: 'Starred',
+                              value: notesState.notes.where((n) => n.isFavorite).length,
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                             ),
                           ),
                         ],
@@ -364,6 +418,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
+<<<<<<< HEAD
                       final pinnedList = filteredNotes.where((n) => n.isPinned).toList();
                       final regularList = filteredNotes.where((n) => !n.isPinned).toList();
                       final hasBothSections = pinnedList.isNotEmpty && regularList.isNotEmpty;
@@ -396,6 +451,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       }
 
                       final note = item as Note;
+=======
+                      final note = filteredNotes[index];
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                       return NoteCard(
                         note: note,
                         onTap: () => _openNote(note),
@@ -410,6 +468,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   label: 'Undo',
                                   textColor: NoveColors.amber,
                                   onPressed: () async {
+<<<<<<< HEAD
                                     // Restore with all metadata preserved
                                     await ref.read(notesProvider.notifier).createNote(
                                       note.content,
@@ -419,6 +478,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       isPinned: note.isPinned,
                                       isFavorite: note.isFavorite,
                                     );
+=======
+                                    await ref.read(notesProvider.notifier).createNote(
+                                        note.content,
+                                        colorLabel: note.colorLabel,
+                                        category: note.category);
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                                   },
                                 ),
                                 duration: const Duration(seconds: 4),
@@ -440,6 +505,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         },
                       );
                     },
+<<<<<<< HEAD
                     childCount: (() {
                       final pinnedList = filteredNotes.where((n) => n.isPinned).toList();
                       final regularList = filteredNotes.where((n) => !n.isPinned).toList();
@@ -449,6 +515,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       if (hasBothSections) count++; // others header
                       return count;
                     })(),
+=======
+                    childCount: filteredNotes.length,
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                   ),
                 ),
               ),
@@ -472,6 +541,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
+<<<<<<< HEAD
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -520,6 +590,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(height: 8),
             ],
           ),
+=======
+      builder: (_) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: NoveColors.warmGray300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Sort notes',
+              style: NoveTypography.h3(context),
+            ),
+            const SizedBox(height: 16),
+            for (final opt in [
+              'Newest first',
+              'Oldest first',
+              'A → Z',
+              'Most words',
+            ])
+              ListTile(
+                title: Text(opt, style: NoveTypography.body(context).copyWith(
+                  fontWeight: NoveTypography.medium,
+                )),
+                onTap: () {
+                  HapticFeedback.selectionClick();
+                  Navigator.pop(context);
+                },
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+            const SizedBox(height: 8),
+          ],
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
         ),
       ),
     );
@@ -931,6 +1044,7 @@ class NoteCard extends StatefulWidget {
 class _NoteCardState extends State<NoteCard> {
   bool _isHovered = false;
 
+<<<<<<< HEAD
   /// Strips markdown syntax so card previews show clean plain text.
   static String _cleanPreview(String raw) {
     var text = raw;
@@ -957,6 +1071,12 @@ class _NoteCardState extends State<NoteCard> {
     if (note.colorLabel.isNotEmpty && note.colorLabel != '#FFFFFF') {
       try {
         return Color(int.parse(note.colorLabel.replaceFirst('#', '0xFF')));
+=======
+  Color _getLeftBorderColor(Note note) {
+    if (note.colorLabel != null && note.colorLabel!.isNotEmpty && note.colorLabel != '#FFFFFF') {
+      try {
+        return Color(int.parse(note.colorLabel!.replaceFirst('#', '0xFF')));
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
       } catch (_) {}
     }
     switch (note.category?.toLowerCase()) {
@@ -1080,7 +1200,18 @@ class _NoteCardState extends State<NoteCard> {
                       ),
                     ),
                     const Spacer(),
+<<<<<<< HEAD
                     for (final c in kNoteColorLabels)
+=======
+                    for (final c in [
+                      '#C0452A',
+                      '#F5C842',
+                      '#5DCAA5',
+                      '#85B7EB',
+                      '#ED93B1',
+                      '#FFFFFF',
+                    ])
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                       GestureDetector(
                         onTap: () {
                           Navigator.pop(context);
@@ -1118,10 +1249,13 @@ class _NoteCardState extends State<NoteCard> {
                 label: 'Share note',
                 onTap: () {
                   Navigator.pop(context);
+<<<<<<< HEAD
                   final shareText = widget.note.title.isNotEmpty
                       ? '${widget.note.title}\n\n${widget.note.content}'
                       : widget.note.content;
                   SharePlus.instance.share(ShareParams(text: shareText));
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                 },
               ),
               _ContextAction(
@@ -1212,9 +1346,13 @@ class _NoteCardState extends State<NoteCard> {
                           ),
                           const SizedBox(height: 6),
                           Text(
+<<<<<<< HEAD
                             widget.note.content.isNotEmpty
                                 ? _cleanPreview(widget.note.content)
                                 : 'No additional text...',
+=======
+                            widget.note.content.isNotEmpty ? widget.note.content : 'No additional text...',
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
                             style: NoveTypography.bodySm(context),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,

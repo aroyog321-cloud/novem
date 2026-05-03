@@ -283,6 +283,7 @@ class NoveShadows {
           blurRadius: 12,
         ),
       ];
+<<<<<<< HEAD
 }
 
 /// Single source of truth for the 6-color note label palette.
@@ -295,3 +296,6 @@ const kNoteColorLabels = [
   '#ED93B1',
   '#FFFFFF',
 ];
+=======
+}
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f

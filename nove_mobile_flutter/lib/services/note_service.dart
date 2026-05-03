@@ -61,8 +61,11 @@ class NoteService {
     String? titleOverride,
     String? category,
     String colorLabel = '#FFFFFF',
+<<<<<<< HEAD
     bool isPinned = false,
     bool isFavorite = false,
+=======
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
   }) async {
     final now = DateTime.now().millisecondsSinceEpoch;
     final id = 'note_${now}_${_uuid.v4().substring(0, 8)}';
@@ -79,8 +82,13 @@ class NoteService {
       content: content,
       category: category,
       colorLabel: colorLabel,
+<<<<<<< HEAD
       isPinned: isPinned,
       isFavorite: isFavorite,
+=======
+      isPinned: false,
+      isFavorite: false,
+>>>>>>> 89545a56f2292ebb16fde939916540c4a792ef7f
       createdAt: now,
       updatedAt: now,
       wordCount: wordCount,
